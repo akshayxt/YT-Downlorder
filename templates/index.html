@@ -144,17 +144,8 @@
                 #1ddde8,
                 #2b1de8,
                 #dd00f3,
-                #dd00f3,
-
-                #ff2400,
-                #e81d1d,
-                #e8b71d,
-                #e3e81d,
-                #1de840,
-                #1ddde8,
-                #2b1de8,
-                #dd00f3,
                 #dd00f3);
+
             position: absolute;
             top: -2px;
             left: -2px;
@@ -200,6 +191,7 @@
                 #e8b71d,
                 #e81d1d,
                 #ff2400);
+
             position: absolute;
             top: calc(50% - 2px);
             left: -2px;
@@ -236,26 +228,47 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
 
-    <video autoplay muted loop class="absolute inset-0 w-full h-full object-cover z-0">
-        <source src="https://static.moewalls.com/videos/preview/2023/sung-jinwoo-shadow-monarch-solo-leveling-preview.mp4" type="video/mp4">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
+    
+    
+
+    <video id="bg-video" autoplay muted loop class="absolute inset-0 w-full h-full object-cover z-0">
+        <source src="" type="video/mp4" id="video-source">
         Your browser does not support the video tag.
     </video>
-
     <div class="absolute top-0 w-full bg-black bg-opacity-50 text-white py-2 z-10">
         <div class="whitespace-nowrap overflow-hidden">
             <div class="inline-block animate-marquee" style="animation: marquee 15s linear infinite;">
-                This is a sample project.
+                Hi, User it's a Python Bassed Social Media Downloader By Team XT It's Fully Add free.
             </div>
         </div>
     </div>
-
+    <script>
+        // Video URLs ka array
+        const videos = [
+            "https://motionbgs.com/dl/4k/4643",
+            "https://static.moewalls.com/videos/preview/2023/sung-jinwoo-shadow-monarch-solo-leveling-preview.webm",
+            "https://static.moewalls.com/videos/preview/2024/sung-jin-woo-necromancer-solo-leveling-preview.webm",
+            "https://static.moewalls.com/videos/preview/2024/uchiha-sasuke-susanoo-preview.webm",
+            "https://cdn.pixabay.com/video/2021/08/10/84574-586228759_large.mp4",
+            "https://cdn.pixabay.com/video/2021/10/10/91562-629172467_large.mp4"
+            
+        ];
+    
+        // Random video select karna
+        const randomVideo = videos[Math.floor(Math.random() * videos.length)];
+    
+        // Video source ko update karna
+        document.getElementById("video-source").src = randomVideo;
+        document.getElementById("bg-video").load();  // Video reload karna taaki update ho jaye
+    </script>
+    
     <button id="menu-button" class="absolute top-4 left-4 text-white z-20">
         <i class="fas fa-bars fa-2x"></i>
     </button>
 
-    <div id="slide-menu" class="fixed top-0 left-0 w-full h-full bg-white bg-opacity-75 flex items-center justify-center z-20 hidden">
+    <div id="slide-menu" class="fixed top-0 left-0 w-full h-full bg-white bg-opacity-75 flex items-center justify-center z-20 transform -translate-x-full transition-transform duration-300">
         <div class="bg-white p-8 rounded-lg shadow-md relative">
             <div class="flex flex-col items-center">
                 <a href="#" target="_blank" class="mb-4 text-blue-600">
@@ -288,6 +301,7 @@
                     <select id="download-as" class="w-full p-2 border border-gray-300 rounded mt-1 rgb-option">
                         <option class="rgb-option">Audio (M4A)</option>
                         <option class="rgb-option">Video (MP4)</option>
+                        
                     </select>
                 </div>
                 <hr class="mb-4 border-gray-600 rgb-line">
@@ -297,11 +311,12 @@
                     <input type="text" id="video-url" placeholder="Enter video URL" class="w-full p-2 border border-gray-300 rounded mt-1">
                 </div>
                 <div class="text-center">
-                    <button id="download-button" type="button" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    <button id="download-button" type="button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-green-600">
                         Download
                     </button>
                     <div id="download-status" class="text-center mt-2 text-gray-300"></div>
                 </div>
+                
             </form>
         </div>
         <div id="instagram-container" class="hidden">
@@ -321,7 +336,7 @@
         </div>
     </div>
 
-    <div class="bg-gray-700 p-8 rounded-lg shadow-lg text-center text-white ml-8 z-10 relative">
+    <div id="feedback-box" class="bg-gray-700 p-8 rounded-lg shadow-lg text-center text-white w-full max-w-md z-10 fixed bottom-0 mb-8 hidden">
         <h2 class="text-xl font-bold mb-4">Feedback Box</h2>
         <form id="feedback-form">
             <div class="mb-4">
@@ -340,12 +355,12 @@
 
     <script>
         document.getElementById('menu-button').addEventListener('click', function() {
-            document.getElementById('slide-menu').classList.remove('hidden');
+            document.getElementById('slide-menu').classList.toggle('-translate-x-full');
         });
 
         document.getElementById('slide-menu').addEventListener('click', function(event) {
             if (event.target === this) {
-                document.getElementById('slide-menu').classList.add('hidden');
+                document.getElementById('slide-menu').classList.add('-translate-x-full');
             }
         });
 
@@ -443,6 +458,35 @@
             .catch(error => {
                 alert("Failed to send feedback.");
             });
+        });
+
+        
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function() {
+            let st = window.pageYOffset || document.documentElement.scrollTop;
+            if (st > lastScrollTop) {
+                // Scroll down
+                document.getElementById('feedback-box').classList.add('hidden');
+            } else {
+                // Scroll up
+                document.getElementById('feedback-box').classList.remove('hidden');
+            }
+            lastScrollTop = st <= 0 ? 0 : st; 
+        }, false);
+
+        // Show feedback box on mouse near bottom for desktop users
+        document.addEventListener('mousemove', function(event) {
+            if (event.clientY > window.innerHeight - 50) {
+                document.getElementById('feedback-box').classList.remove('hidden');
+            }
+        });
+
+        // Hide feedback box when clicking outside of it
+        document.addEventListener('click', function(event) {
+            const feedbackBox = document.getElementById('feedback-box');
+            if (!feedbackBox.contains(event.target)) {
+                feedbackBox.classList.add('hidden');
+            }
         });
     </script>
 
