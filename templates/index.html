@@ -301,7 +301,26 @@
                     <select id="download-as" class="w-full p-2 border border-gray-300 rounded mt-1 rgb-option">
                         <option class="rgb-option">Audio (M4A)</option>
                         <option class="rgb-option">Video (MP4)</option>
-                        
+                    </select>
+                </div>
+                
+                <div id="video-quality-div" class="mb-4">
+                    <label for="video-quality" class="block text-gray-300">Video Quality:</label>
+                    <select id="video-quality" class="w-full p-2 border border-gray-300 rounded mt-1 rgb-option">
+                        <option>144p</option>
+                        <option>360p</option>
+                        <option>720p</option>
+                        <option>1080p</option>
+                    </select>
+                </div>
+                
+                <div id="audio-quality-div" class="mb-4 hidden">
+                    <label for="audio-quality" class="block text-gray-300">Audio Quality:</label>
+                    <select id="audio-quality" class="w-full p-2 border border-gray-300 rounded mt-1 rgb-option">
+                        <option>48kbps</option>
+                        <option>128kbps</option>
+                        <option>192kbps</option>
+                        <option>320kbps</option>
                     </select>
                 </div>
                 <hr class="mb-4 border-gray-600 rgb-line">
@@ -316,7 +335,7 @@
                     </button>
                     <div id="download-status" class="text-center mt-2 text-gray-300"></div>
                 </div>
-                <div id="downloadContainer">
+                <div id="downloadContainer" class="rgb-border text-center bg-opacity-70 p-1 rounded-lg shadow-md">
                     
                 </div>
                 
@@ -378,47 +397,11 @@
             document.getElementById('instagram-container').classList.remove('hidden');
             document.getElementById('youtube-container').classList.add('hidden');
         });
+        
 
-        document.getElementById('download-button').addEventListener('click', function() {
-            const videoUrl = document.getElementById('video-url').value.trim();
-            const downloadType = document.getElementById('download-as').value.toLowerCase().includes("audio") ? "audio" : "video";
-            const statusDiv = document.getElementById('download-status');
+        
 
-            if (!videoUrl) {
-                statusDiv.textContent = "Please enter a video URL!";
-                statusDiv.classList.add("text-red-500");
-                return;
-            }
-
-            statusDiv.textContent = "Downloading...";
-            statusDiv.classList.remove("text-red-500");
-            statusDiv.classList.add("text-blue-500");
-
-            fetch('/download', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ "video-url": videoUrl, "download-as": downloadType })
-            })
-
-            .then(response => response.json())
-            .then(data => {
-                const downloadContainer = document.getElementById("downloadContainer");
-                    downloadContainer.innerHTML = `
-                        <a id="downloadBtn" class="button button--filled button__download"
-                        href="${data.output}"
-                        target="_blank">
-                        Download Video
-                        </a>
-
-                    `;
-                
-                statusDiv.classList.add("text-green-500");
-            })
-            .catch(error => {
-                statusDiv.textContent = "Download failed!";
-                statusDiv.classList.add("text-red-500");
-            });
-        });
+        
 
         document.getElementById('reel-download-button').addEventListener('click', function() {
             const reelUrl = document.getElementById('reel-url').value.trim();
@@ -503,6 +486,45 @@
                 feedbackBox.classList.add('hidden');
             }
         });
+    </script>
+
+<script>
+    document.getElementById('download-as').addEventListener('change', function() {
+        if (this.value.includes("Audio")) {
+            document.getElementById('audio-quality-div').classList.remove('hidden');
+            document.getElementById('video-quality-div').classList.add('hidden');
+        } else {
+            document.getElementById('video-quality-div').classList.remove('hidden');
+            document.getElementById('audio-quality-div').classList.add('hidden');
+        }
+    });
+    
+    document.getElementById('download-button').addEventListener('click', function() {
+        const videoUrl = document.getElementById('video-url').value.trim();
+        const downloadType = document.getElementById('download-as').value.toLowerCase().includes("audio") ? "audio" : "video";
+        const quality = downloadType === "audio" ? document.getElementById('audio-quality').value : document.getElementById('video-quality').value;
+        
+        if (!videoUrl) {
+            alert("Please enter a video URL!");
+            return;
+        }
+    
+        fetch('/download', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "video-url": videoUrl, "download-as": downloadType, "quality": quality })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("downloadContainer").innerHTML = `
+                <a class="button button--filled bg-pink-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    href="${data.output}" target="_blank">👉 Click Here 👈</a>
+            `;
+        })
+        .catch(error => {
+            alert("Download failed!");
+        });
+    });
     </script>
 
 </body>
