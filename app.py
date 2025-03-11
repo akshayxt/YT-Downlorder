@@ -3,18 +3,36 @@ import yt_dlp
 
 app = Flask(__name__)
 
-def get_download_link(video_url, format_choice):
+def get_download_link(video_url, format_choice, quality):
     ydl_opts = {
         'quiet': True,
         'noplaylist': True,
     }
-    
+
+    # Video format selection
     if format_choice == 'mp4':
-        ydl_opts['format'] = 'bv*[height=1080]+ba/bestvideo+bestaudio/best'
+        quality_map = {
+            '144p': 'bv*[height=144]+ba/bestvideo+bestaudio/best',
+            '360p': 'bv*[height=360]+ba/bestvideo+bestaudio/best',
+            '720p': 'bv*[height=720]+ba/bestvideo+bestaudio/best',
+            '1080p': 'bv*[height=1080]+ba/bestvideo+bestaudio/best'
+        }
+        ydl_opts['format'] = quality_map.get(quality, 'bestvideo+bestaudio/best')
+
+    # Audio format selection
     elif format_choice == 'm4a':
-        ydl_opts['format'] = 'bestaudio/bestaudio[ext=m4a]'
+        quality_map = {
+            '48kbps': 'bestaudio[abr<=48]/bestaudio',
+            '128kbps': 'bestaudio[abr<=128]/bestaudio',
+            '192kbps': 'bestaudio[abr<=192]/bestaudio',
+            '320kbps': 'bestaudio[abr<=320]/bestaudio'
+        }
+        ydl_opts['format'] = quality_map.get(quality, 'bestaudio/bestaudio[ext=m4a]')
+
     else:
         return None
+
+
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -43,13 +61,15 @@ def download():
     data = request.get_json()
     video_url = data.get('video-url')
     format_choice = 'm4a' if data.get('download-as') == 'audio' else 'mp4'
+    quality = data.get('quality')
 
-    download_link = get_download_link(video_url, format_choice)
+    download_link = get_download_link(video_url, format_choice, quality)
     
     if download_link:
         return jsonify({"output": download_link})
     else:
         return jsonify({"output": "Failed to fetch download link."}), 400
+
 
 @app.route('/feed', methods=['POST'])
 def feedback():
