@@ -316,6 +316,9 @@
                     </button>
                     <div id="download-status" class="text-center mt-2 text-gray-300"></div>
                 </div>
+                <div id="downloadContainer">
+                    
+                </div>
                 
             </form>
         </div>
@@ -352,6 +355,8 @@
             <button id="send-button" type="button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Send</button>
         </form>
     </div>
+
+
 
     <script>
         document.getElementById('menu-button').addEventListener('click', function() {
@@ -394,9 +399,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ "video-url": videoUrl, "download-as": downloadType })
             })
+
             .then(response => response.json())
             .then(data => {
-                statusDiv.textContent = data.output;
+                const downloadContainer = document.getElementById("downloadContainer");
+                    downloadContainer.innerHTML = `
+                        <a id="downloadBtn" class="button button--filled button__download"
+                        href="${data.output}"
+                        target="_blank">
+                        Download Video
+                        </a>
+
+                    `;
+                
                 statusDiv.classList.add("text-green-500");
             })
             .catch(error => {
